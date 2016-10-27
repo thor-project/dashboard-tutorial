@@ -1,0 +1,34 @@
+.bg-blue {
+    background: #283747;
+}
+
+.bg-grey {
+    background: #f7f6f7;
+}
+
+.text-white {
+    color: white;
+}
+
+.tutorial-section {
+    min-height: 100vh;
+}
+
+pre {
+    background-color: #f1f2f1;
+    padding: 10px;
+    white-space: pre;
+    border: 1px solid #eee;
+    border-radius: 3px;
+}
+
+
+pre code {
+    display: block;
+    background: #283747 !important;
+    color: white;
+    font-family: Menlo, Monaco, Consolas, monospace;
+    line-height: 1.5;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
