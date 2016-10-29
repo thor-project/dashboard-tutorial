@@ -1,5 +1,6 @@
 .bg-blue {
     background: #283747;
+    color: white;
 }
 
 .bg-grey {
@@ -12,6 +13,7 @@
 
 .tutorial-section {
     min-height: 100vh;
+    padding: 30px;
 }
 
 pre {

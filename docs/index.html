@@ -46,7 +46,7 @@
         </div>
 
         <div class="col s9">
-            <img src="assets/img/submissions-dash.gif" width="100%">
+
         </div>
     </div>
 </div>
@@ -91,6 +91,36 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="row tutorial-section bg-blue">
+    <div class="container">
+        <div class="col s3">
+            <h4>
+                Outline of this tutorial
+            </h4>
+        </div>
+
+
+        <div class="col s9">
+            <p>
+                We want to focus on the process of creating a data visualization, not just the end product.
+
+                <ol>
+                    <li>A simple data set</li>
+                    <li>Loading data</li>
+                    <li>Cleaning data</li>
+                    <li>Crossfilter Primitives</li>
+                    <li>DC.js</li>
+                    <li>Creating a dashboard</li>
+                </ol>
+
+                <p>If you download the code repo from github, you'll have all the resources I'll be using.</p>
+            </p>
         </div>
 
     </div>
@@ -202,6 +232,10 @@
 
                 </tbody>
             </table>
+
+            <div>We could have a JSON or CSV representation of such a structure. It doesn't really matter. For our
+                purposes.
+            </div>
         </div>
     </div>
 </div>
@@ -226,19 +260,38 @@
             # calling some code only when a result is returned.
 
             d3.csv('/assets/data/house_sales.csv', function (data) {
-                // result will now automatically have a JSON representation of the CSV file we've just seen.
+            // result will now automatically have a JSON representation of the CSV file we've just seen.
 
-                // let's check our console in our browser to see the content of house prices.
-                console.log(data);
+            // let's check our console in our browser to see the content of house prices.
+            console.log(data);
             }
         </code></pre>
 
-            <p>At the minute, the date object is a string, so we need to convert it to a date object. This is pretty
-                easy
-                with d3.</p>
-
             <p style="font-weight: bolder;">Data cleanup or wrangling is a key, and often tedious part of data
                 visualization.</p>
+        </div>
+    </div>
+</div>
+
+
+<div class="row tutorial-section">
+    <div class="container">
+        <div class="col s3">
+            <h4>Cleaning data</h4>
+
+            <p>
+                Cleaning data is a boring yet necessary task is statistics and data visualization.
+            </p>
+        </div>
+        <div class="col s9">
+            <p>In this part we'll look at:
+
+            <ul>
+                <li>Processing dates</li>
+                <li>Processing numbers</li>
+                <li>Text cleaning</li>
+            </ul>
+            </p>
         </div>
     </div>
 </div>
@@ -271,23 +324,38 @@
             */
 
             d3.csv('/assets/data/house_sales.csv', function (data) {
-                // data will now automatically have a JSON
-                // representation of the CSV file we've just seen.
+            // data will now automatically have a JSON
+            // representation of the CSV file we've just seen.
 
-                var housePrices = crossfilter(data);
+            var housePrices = crossfilter(data);
 
-                // we define our first group, which will be the sales
-                // by date, so we create a new 'dimension' that will
-                // focus on the date field.
-                var salesByDate = housePrices.dimension(function (d) {
-                    return d.date;
-                });
+            // we define our first group, which will be the sales
+            // by date, so we create a new 'dimension' that will
+            // focus on the date field.
+            var salesByDate = housePrices.dimension(function (d) {
+                return d.date;
+            });
 
-                // this operation will simply count the number of
-                // records we have for each unique date.
-                var salesByDateCount = salesByDate.group();
+            // this operation will simply count the number of
+            // records we have for each unique date.
+            var salesByDateCount = salesByDate.group();
 
-                // ...
+            var price = housePrices.dimension(function (d) {
+                return d['Sale Price'];
+            });
+
+
+            // We can also filter things, like filter my dimension by
+            // the price, where our price should be greater than 300 and
+            // less than 600 (1000s)
+            var filteredPrice = salesByDate.filter(function(d) {
+                return d > 300 && D < 600;
+            });
+
+            // We can then see the top results on our filtered dimension for instance.
+            console.log(filteredPrice.top(1));
+
+            // ...
             }
         </code></pre>
 
@@ -299,53 +367,44 @@
     </div>
 </div>
 
+
 <div class="row tutorial-section">
     <div class="container">
         <div class="col s3">
             <h4>Getting started with dc.js</h4>
-            <p>Now that we have our data loaded, and initial dimensions and groups created with crossfilter,
-                we can use dc.js to create our plots.</p>
+            <p>crossfilter and dc.js together.</p>
         </div>
         <div class="col s9">
             <br/>
         <pre><code>
-            /*
-            * we load the CSV file using D3, which takes the file name,
-            * and a callback function as arguments.
-            * since we don't know how long it will take for the
-            * file to be returned, callbacks are our way of
-            * calling some code only when a result is returned.
-            */
+            var housePrices = crossfilter(data);
 
-            d3.csv('/assets/data/house_sales.csv', function (data) {
-                var housePrices = crossfilter(data);
+            var salesByDate = housePrices.dimension(function (d) {
+            return d.date;
+            });
 
-                var salesByDate = housePrices.dimension(function (d) {
-                    return d.date;
-                });
+            var salesByDateCount = salesByDate.group();
 
-                var salesByDateCount = salesByDate.group();
+            var salesChart = dc.barChart("#salesGraphByDate")
+            // this is optional. You can also specify the width,
+            // colours, etc. but we'll do that later
+                .height(200)
+                .x(d3.time.scale().domain([minDate, maxDate]))
+                .dimension(salesByDate)
+                .group(salvesByDateCount);
 
-                var salesChart = dc.barChart("#salesGraphByDate")
-                    // this is optional. You can also specify the width,
-                    // colours, etc. but we'll do that later
-                    .height(200)
-                    .x(d3.time.scale().domain([minDate, maxDate]))
-                    .dimension(salesByDate)
-                    .group(salvesByDateCount);
+            dc.renderAll();
 
-                dc.renderAll();
-            }
         </code></pre>
         </div>
     </div>
 </div>
 
 
-<div class="row tutorial-section bg-grey">
+<div class="row tutorial-section">
     <div class="container">
         <div class="col s3">
-            <h4>Defining our requirements</h4>
+            <h4>Towards a final dashboard</h4>
 
             <p>From our accommodation sales content, in our application, we want to provide users with the ability to
                 filter
@@ -400,7 +459,6 @@
         </div>
     </div>
 </div>
-
 
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
