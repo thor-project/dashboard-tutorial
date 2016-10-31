@@ -62,6 +62,7 @@ var dashboardTutorial = (function () {
                     .dimension(city)
                     .group(cityGroup);
 
+                // EXERCISE: Now let's add a chart to display the building type
 
 
                 dc.renderAll();

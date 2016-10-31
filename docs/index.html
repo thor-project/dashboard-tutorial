@@ -12,21 +12,17 @@
 
 
 <div class="row tutorial-section bg-blue text-white">
-    <div class="container">
-        <div class="col s3">
-            <h4>Creating Metric Dashboards</h4>
-            <p class="">A brief introduction</p>
+    <div class="container valign-wrapper">
+        <div class="col s12 flow-text center-align">
+            <h4 style="padding-top: 5em;">Creating Dashboards</h4>
+            <p class="">Crossfilter, D3, and DC.js</p>
 
-            <p>All code can be accessed from our <a href="">github repository</a> with a number examples of how to
+            <p style="font-size: .9em">All code can be accessed from our <a href="">github repository</a> with a number examples of how to
                 create
                 dashboards for
                 a number of metric types.</p>
         </div>
 
-        <div class="col s9">
-            <br/>
-            <img src="assets/img/submissions-dash.gif" width="100%">
-        </div>
     </div>
 </div>
 
@@ -37,16 +33,18 @@
             <h4>
                 What are dashboards?
             </h4>
-            <p>Dashboards provide a way to visually interrogate multi-dimensional data. As an example, for the THOR
+
+        </div>
+
+        <div class="col s9">
+            <p class="flow-text">Dashboards provide a way to visually interrogate multi-dimensional data. As an example, for the THOR
                 project,
                 we have created a dashboard that allows users to filter across multiple 'features' of the data, e.g.
                 number
                 of DOIs minted,
                 who minted them, the type of DOI, and the date they were minted for example.</p>
-        </div>
 
-        <div class="col s9">
-
+            <img src="assets/img/submissions-dash.gif" width="100%">
         </div>
     </div>
 </div>
@@ -63,13 +61,13 @@
 
 
         <div class="col s9">
-            <p>
+            <p class="flow-text">
                 Although creating dashboards from scratch is relatively easy with frameworks such as d3.js,
                 libraries exist to take away much of the pain in creating effective, linked, and performant
                 dashboards for your content.
             </p>
 
-            <p>In our example, we will use <a href="" target="_new">dc.js</a>, a JavaScript library that provides charts
+            <p class="flow-text">In our example, we will use <a href="" target="_new">dc.js</a>, a JavaScript library that provides charts
                 implemented in <a href="" target="_new">d3.js</a>, and uses
                 <a href="" target="_new">crossfilter.js</a> to provide fast filtering across large datasets (100s of
                 thousands of data values).</p>
@@ -107,7 +105,7 @@
 
 
         <div class="col s9">
-            <p>
+            <p class="flow-text">
                 We want to focus on the process of creating a data visualization, not just the end product.
 
                 <ol>
@@ -133,6 +131,10 @@
 
             <p>For crossfilter to work, we need our data to be flat, as per a standard table structure as shown in this
                 example about house prices in the UK.</p>
+
+            <p>We could have a JSON or CSV representation of such a structure. It doesn't really matter. For our
+                purposes we'll use CSV, but as you'll see, this will be converted for us to JSON.
+            </p>
         </div>
         <div class="col s9">
             <table class="responsive-table">
@@ -233,9 +235,7 @@
                 </tbody>
             </table>
 
-            <div>We could have a JSON or CSV representation of such a structure. It doesn't really matter. For our
-                purposes.
-            </div>
+
         </div>
     </div>
 </div>
@@ -267,7 +267,7 @@
             }
         </code></pre>
 
-            <p style="font-weight: bolder;">Data cleanup or wrangling is a key, and often tedious part of data
+            <p class="flow-text">Data cleanup or wrangling is a key, and often tedious part of data
                 visualization.</p>
         </div>
     </div>
@@ -279,12 +279,12 @@
         <div class="col s3">
             <h4>Cleaning data</h4>
 
-            <p>
+            <p >
                 Cleaning data is a boring yet necessary task is statistics and data visualization.
             </p>
         </div>
         <div class="col s9">
-            <p>In this part we'll look at:
+            <p class="flow-text">In this part we'll look at:
 
             <ul>
                 <li>Processing dates</li>
@@ -301,16 +301,43 @@
         <div class="col s3">
             <h4>Crossfilter primitives</h4>
 
-            <p>Dimensions and groups are the key concepts behind crossfilter. By efficiently processing and aggregating
+            <p class="grey-text">Dimensions and groups are the key concepts behind crossfilter. By efficiently processing and aggregating
                 data,
                 filtering can work much more quickly.</p>
         </div>
 
         <div class="col s9">
-            <p>To use dc.js, we need to define what are called dimensions (e.g. dates, the county, number of bedrooms),
-                and
-                groups,
-                which are generally just counts of the number of times a value of a particular dimension occurs.</p>
+            <p class="flow-text">To use dc.js, we need to define what are called dimensions (e.g. dates, the county, number of bedrooms),
+                and groups, which are generally just counts of the number of times a value occurs.
+
+                <br/>
+            <div class="row">
+            <div class="col s6">
+                <strong>Dimension (Sales Date)</strong>
+                <div class="collection">
+                    <div class="collection-item">09-06-2016</div>
+                    <div class="collection-item">08-06-2016</div>
+                    <div class="collection-item">08-06-2016</div>
+                    <div class="collection-item">07-06-2016</div>
+                    <div class="collection-item">07-06-2016</div>
+                    <div class="collection-item">07-06-2016</div>
+                </div>
+            </div>
+
+            <div class="col s6">
+                <strong>Group</strong>
+                <div class="collection">
+                    <div class="collection-item">09-06-2016 <span class="badge">1</span></div>
+                    <div class="collection-item">08-06-2016 <span class="badge">2</span></div>
+                    <div class="collection-item">07-06-2016 <span class="badge">3</span></div>
+                </div>
+            </div>
+
+        </div>
+
+            </p>
+
+
 
             <p>This is an operation termed <strong>map - reduce</strong></p>
 
@@ -324,43 +351,43 @@
             */
 
             d3.csv('/assets/data/house_sales.csv', function (data) {
-            // data will now automatically have a JSON
-            // representation of the CSV file we've just seen.
+                // data will now automatically have a JSON
+                // representation of the CSV file we've just seen.
 
-            var housePrices = crossfilter(data);
+                var housePrices = crossfilter(data);
 
-            // we define our first group, which will be the sales
-            // by date, so we create a new 'dimension' that will
-            // focus on the date field.
-            var salesByDate = housePrices.dimension(function (d) {
-                return d.date;
-            });
+                // we define our first group, which will be the sales
+                // by date, so we create a new 'dimension' that will
+                // focus on the date field.
+                var salesByDate = housePrices.dimension(function (d) {
+                    return d.date;
+                });
 
-            // this operation will simply count the number of
-            // records we have for each unique date.
-            var salesByDateCount = salesByDate.group();
+                // this operation will simply count the number of
+                // records we have for each unique date.
+                var salesByDateCount = salesByDate.group();
 
-            var price = housePrices.dimension(function (d) {
-                return d['Sale Price'];
-            });
+                var price = housePrices.dimension(function (d) {
+                    return d['Sale Price'];
+                });
 
 
-            // We can also filter things, like filter my dimension by
-            // the price, where our price should be greater than 300 and
-            // less than 600 (1000s)
-            var filteredPrice = salesByDate.filter(function(d) {
-                return d > 300 && D < 600;
-            });
+                // We can also filter things, like filter my dimension by
+                // the price, where our price should be greater than 300 and
+                // less than 600 (1000s)
+                var filteredPrice = salesByDate.filter(function(d) {
+                    return d > 300 && D < 600;
+                });
 
-            // We can then see the top results on our filtered dimension for instance.
-            console.log(filteredPrice.top(1));
+                // We can then see the top results on our filtered dimension for instance.
+                console.log(filteredPrice.top(1));
 
-            // ...
+                // ...
             }
         </code></pre>
 
-            <p>So what does this give us? Well, not much yet. Let's move on to create a plot using this dimension and
-                group
+            <p>So what does this give us? For now, we have a dimension, and a grouping, which are key for any plot that we'll create.
+                Let's move on to create a plot using this dimension and group
                 and see how things look.</p>
 
         </div>
