@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="assets/css/materialize.min.css" rel="stylesheet"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/tomorrow-night-blue.min.css"/>
+    <link href="assets/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+
+
+<div class="row tutorial-section bg-blue text-white">
+    <div class="container valign-wrapper">
+        <div class="col s12 flow-text center-align">
+            <h4 style="padding-top: 5em;">Creating Dashboards</h4>
+            <p class="">Crossfilter, D3, and DC.js</p>
+
+            <p style="font-size: .9em">All code can be accessed from our <a href="">github repository</a> with a number examples of how to
+                create
+                dashboards for
+                a number of metric types.</p>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="row tutorial-section">
+    <div class="container">
+        <div class="col s3">
+            <h4>
+                What are dashboards?
+            </h4>
+
+        </div>
+
+        <div class="col s9">
+            <p class="flow-text">Dashboards provide a way to visually interrogate multi-dimensional data. As an example, for the THOR
+                project,
+                we have created a dashboard that allows users to filter across multiple 'features' of the data, e.g.
+                number
+                of DOIs minted,
+                who minted them, the type of DOI, and the date they were minted for example.</p>
+
+            <img src="assets/img/submissions-dash.gif" width="100%">
+        </div>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="row tutorial-section bg-grey">
+    <div class="container">
+        <div class="col s3">
+            <h4>
+                Technologies we'll focus on
+            </h4>
+        </div>
+
+
+        <div class="col s9">
+            <p class="flow-text">
+                Although creating dashboards from scratch is relatively easy with frameworks such as d3.js,
+                libraries exist to take away much of the pain in creating effective, linked, and performant
+                dashboards for your content.
+            </p>
+
+            <p class="flow-text">In our example, we will use <a href="" target="_new">dc.js</a>, a JavaScript library that provides charts
+                implemented in <a href="" target="_new">d3.js</a>, and uses
+                <a href="" target="_new">crossfilter.js</a> to provide fast filtering across large datasets (100s of
+                thousands of data values).</p>
+
+            <div class="row">
+                <div class="container-fluid">
+                    <div class="col s4">
+                        <img src="http://cdn.codevisually.com/wp-content/uploads/2012/04/crossfilter_full.jpeg"
+                             width="200px">
+                    </div>
+
+                    <div class="col s4">
+                        <img src="https://d1xwtr0qwr70yv.cloudfront.net/assets/tech/d3-e8f9baa677bcbdc852acad420a53fb4f.svg"
+                             width="200px">
+                    </div>
+
+                    <div class="col s4">
+                        <img src="https://dc-js.github.io/dc.js/dc.logo.png" width="200px">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="row tutorial-section bg-blue">
+    <div class="container">
+        <div class="col s3">
+            <h4>
+                Outline of this tutorial
+            </h4>
+        </div>
+
+
+        <div class="col s9">
+            <p class="flow-text">
+                We want to focus on the process of creating a data visualization, not just the end product.
+
+                <ol>
+                    <li>A simple data set</li>
+                    <li>Loading data</li>
+                    <li>Cleaning data</li>
+                    <li>Crossfilter Primitives</li>
+                    <li>DC.js</li>
+                    <li>Creating a dashboard</li>
+                </ol>
+
+                <p>If you download the code repo from github, you'll have all the resources I'll be using.</p>
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<div class="row tutorial-section">
+    <div class="container">
+        <div class="col s3">
+            <h4>Data Structure</h4>
+
+            <p>For crossfilter to work, we need our data to be flat, as per a standard table structure as shown in this
+                example about house prices in the UK.</p>
+
+            <p>We could have a JSON or CSV representation of such a structure. It doesn't really matter. For our
+                purposes we'll use CSV, but as you'll see, this will be converted for us to JSON.
+            </p>
+        </div>
+        <div class="col s9">
+            <table class="responsive-table">
+                <thead>
+                <tr>
+                    <th data-field="date">Sale Date</th>
+                    <th data-field="type">Accommodation Type</th>
+                    <th data-field="city">City</th>
+                    <th data-field="meters">Square meters</th>
+                    <th data-field="bedrooms">Bedrooms</th>
+                    <th data-field="bathrooms">Bathrooms</th>
+                    <th data-field="garage">Garage</th>
+                    <th data-field="garden">Garden</th>
+                    <th data-field="driveway">Driveway</th>
+                    <th data-field="price">Sale Price (1000s)</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr>
+                    <td>2016-06-07</td>
+                    <td>Detached House</td>
+                    <td>Durham</td>
+                    <td>500</td>
+                    <td>5</td>
+                    <td>3</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>600</td>
+
+                </tr>
+                <tr>
+                    <td>2016-06-06</td>
+                    <td>Apartment</td>
+                    <td>London</td>
+                    <td>60</td>
+                    <td>2</td>
+                    <td>1</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>500</td>
+
+                </tr>
+                <tr>
+                    <td>2016-06-07</td>
+                    <td>Detached House</td>
+                    <td>Manchester</td>
+                    <td>400</td>
+                    <td>4</td>
+                    <td>2</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>340</td>
+                </tr>
+
+                <tr>
+                    <td>2016-05-03</td>
+                    <td>Apartment</td>
+                    <td>London</td>
+                    <td>56</td>
+                    <td>2</td>
+                    <td>1</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>390</td>
+                </tr>
+
+                <tr>
+                    <td>2016-05-03</td>
+                    <td>Terraced House</td>
+                    <td>London</td>
+                    <td>160</td>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>390</td>
+                </tr>
+
+                <tr>
+                    <td>2016-04-03</td>
+                    <td>Apartment</td>
+                    <td>Newcastle</td>
+                    <td>140</td>
+                    <td>2</td>
+                    <td>1</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                    <td>190</td>
+                </tr>
+
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+</div>
+
+
+<div class="row tutorial-section bg-grey">
+    <div class="container">
+        <div class="col s3">
+            <h4>Loading data</h4>
+
+            <p>Now that we have an interesting first data set to play with, let's load it using JavaScript so that we
+                can
+                start visualising it!
+            </p>
+        </div>
+        <div class="col s9">
+            <br/>
+
+        <pre><code>
+            # we load the CSV file using D3, which takes the file name, and a callback function as arguments.
+            # since we don't know how long it will take for the file to be returned, callbacks are our way of
+            # calling some code only when a result is returned.
+
+            d3.csv('/assets/data/house_sales.csv', function (data) {
+            // result will now automatically have a JSON representation of the CSV file we've just seen.
+
+            // let's check our console in our browser to see the content of house prices.
+            console.log(data);
+            }
+        </code></pre>
+
+            <p class="flow-text">Data cleanup or wrangling is a key, and often tedious part of data
+                visualization.</p>
+        </div>
+    </div>
+</div>
+
+
+<div class="row tutorial-section">
+    <div class="container">
+        <div class="col s3">
+            <h4>Cleaning data</h4>
+
+            <p >
+                Cleaning data is a boring yet necessary task is statistics and data visualization.
+            </p>
+        </div>
+        <div class="col s9">
+            <p class="flow-text">In this part we'll look at:
+
+            <ul>
+                <li>Processing dates</li>
+                <li>Processing numbers</li>
+                <li>Text cleaning</li>
+            </ul>
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row tutorial-section bg-grey">
+    <div class="container">
+        <div class="col s3">
+            <h4>Crossfilter primitives</h4>
+
+            <p class="grey-text">Dimensions and groups are the key concepts behind crossfilter. By efficiently processing and aggregating
+                data,
+                filtering can work much more quickly.</p>
+        </div>
+
+        <div class="col s9">
+            <p class="flow-text">To use dc.js, we need to define what are called dimensions (e.g. dates, the county, number of bedrooms),
+                and groups, which are generally just counts of the number of times a value occurs.
+
+                <br/>
+            <div class="row">
+            <div class="col s6">
+                <strong>Dimension (Sales Date)</strong>
+                <div class="collection">
+                    <div class="collection-item">09-06-2016</div>
+                    <div class="collection-item">08-06-2016</div>
+                    <div class="collection-item">08-06-2016</div>
+                    <div class="collection-item">07-06-2016</div>
+                    <div class="collection-item">07-06-2016</div>
+                    <div class="collection-item">07-06-2016</div>
+                </div>
+            </div>
+
+            <div class="col s6">
+                <strong>Group</strong>
+                <div class="collection">
+                    <div class="collection-item">09-06-2016 <span class="badge">1</span></div>
+                    <div class="collection-item">08-06-2016 <span class="badge">2</span></div>
+                    <div class="collection-item">07-06-2016 <span class="badge">3</span></div>
+                </div>
+            </div>
+
+        </div>
+
+            </p>
+
+
+
+            <p>This is an operation termed <strong>map - reduce</strong></p>
+
+        <pre><code>
+            /*
+            * We load the CSV file using D3, which takes the file name,
+            * and a callback function as arguments.
+            * since we don't know how long it will take for the file
+            * to be returned, callbacks are our way of
+            * calling some code only when a result is returned.
+            */
+
+            d3.csv('/assets/data/house_sales.csv', function (data) {
+                // data will now automatically have a JSON
+                // representation of the CSV file we've just seen.
+
+                var housePrices = crossfilter(data);
+
+                // we define our first group, which will be the sales
+                // by date, so we create a new 'dimension' that will
+                // focus on the date field.
+                var salesByDate = housePrices.dimension(function (d) {
+                    return d.date;
+                });
+
+                // this operation will simply count the number of
+                // records we have for each unique date.
+                var salesByDateCount = salesByDate.group();
+
+                var price = housePrices.dimension(function (d) {
+                    return d['Sale Price'];
+                });
+
+
+                // We can also filter things, like filter my dimension by
+                // the price, where our price should be greater than 300 and
+                // less than 600 (1000s)
+                var filteredPrice = salesByDate.filter(function(d) {
+                    return d > 300 && D < 600;
+                });
+
+                // We can then see the top results on our filtered dimension for instance.
+                console.log(filteredPrice.top(1));
+
+                // ...
+            }
+        </code></pre>
+
+            <p>So what does this give us? For now, we have a dimension, and a grouping, which are key for any plot that we'll create.
+                Let's move on to create a plot using this dimension and group
+                and see how things look.</p>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="row tutorial-section">
+    <div class="container">
+        <div class="col s3">
+            <h4>Getting started with dc.js</h4>
+            <p>crossfilter and dc.js together.</p>
+        </div>
+        <div class="col s9">
+            <br/>
+        <pre><code>
+            var housePrices = crossfilter(data);
+
+            var salesByDate = housePrices.dimension(function (d) {
+            return d.date;
+            });
+
+            var salesByDateCount = salesByDate.group();
+
+            var salesChart = dc.barChart("#salesGraphByDate")
+            // this is optional. You can also specify the width,
+            // colours, etc. but we'll do that later
+                .height(200)
+                .x(d3.time.scale().domain([minDate, maxDate]))
+                .dimension(salesByDate)
+                .group(salvesByDateCount);
+
+            dc.renderAll();
+
+        </code></pre>
+        </div>
+    </div>
+</div>
+
+
+<div class="row tutorial-section">
+    <div class="container">
+        <div class="col s3">
+            <h4>Towards a final dashboard</h4>
+
+            <p>From our accommodation sales content, in our application, we want to provide users with the ability to
+                filter
+                sales by:
+            <ol>
+                <li>
+                    <strong>Sales per date</strong>
+
+                </li>
+                <li>
+                    <strong>Sales price</strong>
+                </li>
+
+                <li>
+                    <strong>County</strong>
+                </li>
+
+                <li>
+                    <strong>Accommodation type</strong>
+                </li>
+
+                <li>
+                    <strong>Size (sq. meters)</strong>
+                </li>
+
+                <li>
+                    <strong>Number of bedrooms</strong>; and
+                </li>
+
+                <li>
+                    <strong>Number of bathrooms</strong>
+                </li>
+
+                <li>
+                    <strong>Has a Garage</strong>
+                </li>
+                <li>
+                    <strong>Has a Garden</strong>
+                </li>
+
+                <li>
+                    <strong>Has a Driveway</strong>
+                </li>
+
+            </ol>
+
+            (Note: we are going to provide users with a way of filtering across <i>all</i> of the data dimensions...)
+            </p>
+        </div>
+        <div class="col s9">
+            <img src="docs/assets/img/design.svg" width="100%">
+        </div>
+    </div>
+</div>
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
